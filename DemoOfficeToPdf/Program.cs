@@ -11,14 +11,20 @@ namespace DemoOfficeToPdf
             var currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
             using (var pdfConverter = new PdfConverter())
             {
-                var excelFilepath = Path.Combine(currentDirectory, "Files/workbook.xlsx");
-                pdfConverter.ExcelToPdf(excelFilepath, excelFilepath.Replace(excelFilepath.Split('.').Last(), "pdf"));
+                var excelSource = Path.Combine(currentDirectory, "Files/workbook.xlsx");
+                var excelPdfDestination = excelSource.Replace(excelSource.Split('.').Last(), "pdf");
+                pdfConverter.SaveToPdf(SourceType.Excel, excelSource, excelPdfDestination);
+                //pdfConverter.ExcelToPdf(excelSource, excelPdfDestination);
 
-                var powerpointFilepath = Path.Combine(currentDirectory, "Files/presentation.pptx");
-                pdfConverter.PowerPointToPdf(powerpointFilepath, powerpointFilepath.Replace(powerpointFilepath.Split('.').Last(), "pdf"));
+                var powerpointSource = Path.Combine(currentDirectory, "Files/presentation.pptx");
+                var powerpointPdfDestination = powerpointSource.Replace(powerpointSource.Split('.').Last(), "pdf");
+                pdfConverter.SaveToPdf(SourceType.PowerPoint, powerpointSource, powerpointPdfDestination);
+                //pdfConverter.PowerPointToPdf(powerpointSource, powerpointPdfDestination);
 
-                var wordFilepath = Path.Combine(currentDirectory, "Files/document.docx");
-                pdfConverter.WordToPdf(wordFilepath, wordFilepath.Replace(wordFilepath.Split('.').Last(), "pdf"));
+                var wordSource = Path.Combine(currentDirectory, "Files/document.docx");
+                var wordPdfDestination = wordSource.Replace(wordSource.Split('.').Last(), "pdf");
+                pdfConverter.SaveToPdf(SourceType.Word, wordSource, wordPdfDestination);
+                //pdfConverter.WordToPdf(wordSource, wordPdfDestination);
             }
 
             Console.WriteLine("Done!");

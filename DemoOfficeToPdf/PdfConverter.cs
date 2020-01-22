@@ -6,54 +6,96 @@ using Word = Microsoft.Office.Interop.Word;
 
 namespace DemoOfficeToPdf
 {
+    public enum SourceType
+    {
+        Excel,
+        PowerPoint,
+        Word
+    }
+
     public class PdfConverter : IDisposable
     {
-        bool disposed = false;
-        private Excel.Application ExcelApp { get; set; }
-        private PowerPoint.Application PowerPointApp { get; set; }
-        private Word.Application WordApp { get; set; }
+        private bool disposed = false;
 
-        public PdfConverter()
+        /// <summary>
+        ///  轉成 PDF
+        /// </summary>
+        /// <param name="type">來源檔案類型</param>
+        /// <param name="source">檔案來源位置</param>
+        /// <param name="destination">儲存目的位置</param>
+        public void SaveToPdf(SourceType type, string source, string destination)
         {
-            ExcelApp = new Excel.Application();
-            PowerPointApp = new PowerPoint.Application();
-            WordApp = new Word.Application();
+            switch (type)
+            {
+                case SourceType.Excel:
+                    ExcelToPdf(source, destination);
+                    break;
+                case SourceType.PowerPoint:
+                    PowerPointToPdf(source, destination);
+                    break;
+                case SourceType.Word:
+                    WordToPdf(source, destination);
+                    break;
+                default:
+                    break;
+            }
         }
 
         /// <summary>
         /// 將 Excel 轉成 PDF
         /// </summary>
-        /// <param name="fileSource">Excel 檔案位置</param>
-        /// <param name="saveDestination">PDF 儲存位置</param>
-        public void ExcelToPdf(string fileSource, string saveDestination)
+        /// <param name="source">檔案來源位置</param>
+        /// <param name="destination">儲存目的位置</param>
+        public void ExcelToPdf(string source, string destination)
         {
-            var workbook = ExcelApp.Workbooks.Open(fileSource);
-            workbook.ExportAsFixedFormat(Excel.XlFixedFormatType.xlTypePDF, saveDestination);
+            var excelApp = new Excel.Application();
+            var workbooks = excelApp.Workbooks;
+            var workbook = workbooks.Open(source);
+            workbook.ExportAsFixedFormat(Excel.XlFixedFormatType.xlTypePDF, destination);
             workbook.Close();
+            excelApp.Quit();
+            GC.Collect();
+            Marshal.FinalReleaseComObject(workbook);
+            Marshal.FinalReleaseComObject(workbooks);
+            Marshal.FinalReleaseComObject(excelApp);
         }
 
         /// <summary>
         /// 將 PowerPoint 轉成 PDF
         /// </summary>
-        /// <param name="fileSource">PowerPoint 檔案位置</param>
-        /// <param name="saveDestination">PDF 儲存位置</param>
-        public void PowerPointToPdf(string fileSource, string saveDestination)
+        /// <param name="source">檔案來源位置</param>
+        /// <param name="destination">儲存目的位置</param>
+        public void PowerPointToPdf(string source, string destination)
         {
-            var presentations = PowerPointApp.Presentations.Open(fileSource);
-            presentations.ExportAsFixedFormat(saveDestination, PowerPoint.PpFixedFormatType.ppFixedFormatTypePDF);
-            presentations.Close();
+            var powerPointApp = new PowerPoint.Application();
+            var presentations = powerPointApp.Presentations;
+            var presentation = presentations.Open(source);
+            presentation.ExportAsFixedFormat(destination, PowerPoint.PpFixedFormatType.ppFixedFormatTypePDF);
+            presentation.Close();
+            powerPointApp.Quit();
+            GC.Collect();
+            Marshal.FinalReleaseComObject(presentation);
+            Marshal.FinalReleaseComObject(presentations);
+            Marshal.FinalReleaseComObject(powerPointApp);
         }
 
         /// <summary>
         /// 將 Word 轉成 PDF
         /// </summary>
-        /// <param name="fileSource">Word 檔案位置</param>
-        /// <param name="saveDestination">PDF 儲存位置</param>
-        public void WordToPdf(string fileSource, string saveDestination)
+        /// <param name="source">檔案來源位置</param>
+        /// <param name="destination">儲存目的位置</param>
+        public void WordToPdf(string source, string destination)
         {
-            var document = WordApp.Documents.Open(fileSource);
-            document.ExportAsFixedFormat(saveDestination, Word.WdExportFormat.wdExportFormatPDF);
+            var wordApp = new Word.Application();
+            var documents = wordApp.Documents;
+            var document = documents.Open(source);
+            document.ExportAsFixedFormat(destination, Word.WdExportFormat.wdExportFormatPDF);
             document.Close();
+            wordApp.Quit();
+            GC.Collect();
+            Marshal.FinalReleaseComObject(document);
+            Marshal.FinalReleaseComObject(documents);
+            Marshal.FinalReleaseComObject(wordApp);
         }
 
         public void Dispose()
@@ -66,40 +108,15 @@ namespace DemoOfficeToPdf
         {
             if (disposed) return;
 
-            // Free any unmanaged objects here.
-            try
+            if (disposing)
             {
-                if (disposing)
-                {
-                    // Free any other managed objects here.
-                    ExcelApp.Quit();
-                    PowerPointApp.Quit();
-                    WordApp.Quit();
-                }
-                if (ExcelApp?.Sheets != null)
-                {
-                    Marshal.FinalReleaseComObject(ExcelApp.Sheets);
-                }
-                if (ExcelApp?.Workbooks != null)
-                {
-                    ExcelApp.Workbooks.Close();
-                    Marshal.FinalReleaseComObject(ExcelApp.Workbooks);
-                }
-                Marshal.FinalReleaseComObject(ExcelApp);
-                Marshal.FinalReleaseComObject(PowerPointApp);
-                if (PowerPointApp.Presentations != null)
-                {
-                    Marshal.FinalReleaseComObject(PowerPointApp.Presentations);
-                }
-                Marshal.FinalReleaseComObject(WordApp);
+                // Free any other managed objects here.
+                //
+            }
 
-                disposed = true;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
-                throw;
-            }
+            // Free any unmanaged objects here.
+            //
+            disposed = true;
         }
 
         ~PdfConverter()
