@@ -13,18 +13,18 @@ namespace DemoOfficeToPdf
             {
                 var excelSource = Path.Combine(currentDirectory, "Files/workbook.xlsx");
                 var excelPdfDestination = excelSource.Replace(excelSource.Split('.').Last(), "pdf");
-                pdfConverter.SaveToPdf(SourceType.Excel, excelSource, excelPdfDestination);
-                //pdfConverter.ExcelToPdf(excelSource, excelPdfDestination);
+                pdfConverter.SaveAsPdf(SourceType.Excel, excelSource, excelPdfDestination);
+                //pdfConverter.ExcelAsPdf(excelSource, excelPdfDestination);
 
                 var powerpointSource = Path.Combine(currentDirectory, "Files/presentation.pptx");
                 var powerpointPdfDestination = powerpointSource.Replace(powerpointSource.Split('.').Last(), "pdf");
-                pdfConverter.SaveToPdf(SourceType.PowerPoint, powerpointSource, powerpointPdfDestination);
-                //pdfConverter.PowerPointToPdf(powerpointSource, powerpointPdfDestination);
+                pdfConverter.SaveAsPdf(SourceType.PowerPoint, powerpointSource, powerpointPdfDestination);
+                //pdfConverter.PowerPointAsPdf(powerpointSource, powerpointPdfDestination);
 
                 var wordSource = Path.Combine(currentDirectory, "Files/document.docx");
                 var wordPdfDestination = wordSource.Replace(wordSource.Split('.').Last(), "pdf");
-                pdfConverter.SaveToPdf(SourceType.Word, wordSource, wordPdfDestination);
-                //pdfConverter.WordToPdf(wordSource, wordPdfDestination);
+                pdfConverter.SaveAsPdf(SourceType.Word, wordSource, wordPdfDestination);
+                //pdfConverter.WordAsPdf(wordSource, wordPdfDestination);
             }
 
             Console.WriteLine("Done!");
